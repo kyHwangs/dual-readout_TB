@@ -2,6 +2,7 @@
 #include <vector>
 #include <stdexcept>
 
+#include "TStyle.h"
 #include "TCanvas.h"
 #include "TPad.h"
 #include "TPaveStats.h"
@@ -49,7 +50,13 @@ void TBplotbase::init() {
                             yup.at(plotkind_).at(i));
 
     pads_.push_back(tmpPad);
-    padSet(pads_.at(i), 0.1);
+    if (plotkind_ == TBplotbase::kind::distribution) {
+      padSet(pads_.at(i), 0.05);
+    } else if(plotkind_ == kind::dwc || plotkind_ == kind::auxiliary){
+      padSet(pads_.at(i), 0.08);
+    } else {
+      padSet(pads_.at(i), 0.);
+    }
   }
 }
 
@@ -80,7 +87,7 @@ void TBplot::init_plots() {
       plots2D_.push_back(tmpHist);
     }
   } else if ( plotkind_ == TBplotbase::kind::hitmap ) {
-    TH2D* colPal = new TH2D((TString)(plotname_+std::to_string(plotkind_)+""+std::to_string(0)), (TString)(plotname_+std::to_string(plotkind_)+""+std::to_string(0)), 1, 0, 1, 10000, 0, 1);
+    TH2D* colPal = new TH2D((TString)(plotname_+std::to_string(plotkind_)+""+std::to_string(0)), (TString)(plotname_+std::to_string(plotkind_)+""+std::to_string(0)), 1, 0, 1, 10, 0, 1);
     colPal->SetStats(0);
     colPal->SetTitle("");
     colPal->GetXaxis()->SetTickLength(0.);
@@ -88,8 +95,8 @@ void TBplot::init_plots() {
     colPal->GetZaxis()->SetRangeUser(0., distMax_);
     colPal->Sumw2();
 
-    for (int i = 1; i <= 10000; i++)
-      colPal->SetBinContent(1, i, (distMax_/9999.)*(i-1));
+    for (int i = 1; i <= 10; i++)
+      colPal->SetBinContent(1, i, (distMax_/9.)*(i-1));
 
     plots2D_.push_back(colPal);
 
@@ -108,7 +115,7 @@ void TBplot::init_plots() {
         tmpHist->SetTitle("");
         tmpHist->GetXaxis()->SetTickLength(0.);
         tmpHist->GetYaxis()->SetTickLength(0.);
-        tmpHist->GetZaxis()->SetRangeUser(0., distMax_/20.);
+        tmpHist->GetZaxis()->SetRangeUser(0., distMax_);
         tmpHist->Sumw2();
       }
 
@@ -407,6 +414,8 @@ void TBplot::Reset() {
 }
 
 void TBplot::Draw() {
+  gStyle->SetPalette(kRainBow);
+
   if ( plotkind_ == TBplotbase::kind::sipmHitMap || plotkind_ == TBplotbase::kind::dwc ) {
     for (int i = 0; i < xlow.at(plotkind_).size(); i++) {
       c_->cd();
@@ -416,7 +425,11 @@ void TBplot::Draw() {
   } else if ( plotkind_ == TBplotbase::kind::hitmap ) {
     c_->cd();
     pads_.at(0)->cd();
-    plots2D_.at(0)->Draw("col");
+    plots2D_.at(0)->SetMarkerSize(13);
+    plots2D_.at(0)->Draw("col TEXT");
+
+    plots2D_.at(9)->GetZaxis()->SetRangeUser(0., plots2D_.at(9)->GetMaximum());
+    plots2D_.at(22)->GetZaxis()->SetRangeUser(0., plots2D_.at(22)->GetMaximum());
 
     for (int i = 1; i < xlow.at(plotkind_).size(); i++) {
       c_->cd();
@@ -443,7 +456,7 @@ void TBplot::Draw() {
       S_stat->SaveStyle();
 
       // Cerenkov
-     plots1D_.at(i)->Draw("Hist&sames");
+      plots1D_.at(i)->Draw("Hist&sames");
       c_->Modified();
       c_->Update();
 
