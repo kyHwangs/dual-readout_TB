@@ -94,6 +94,10 @@ void TBmonit::MonitPlots(int max_evt) {
   auto AuxFast = new TBplot(1000, 330, 100000., 1000., "AuxFast", TBplotbase::kind::auxiliary);
   auto AuxWave = new TBplot(1000, 330, DistMaxADC_, DistBinADC_, "AuxWave", TBplotbase::kind::auxiliary);
 
+
+  auto M3DprintFAST = new TBplot(1000, 500, 100000., 1000., "M3DprintFAST", TBplotbase::kind::auxiliary);
+  auto M3DprintWAVE = new TBplot(1000, 500, 4096., 1024., "M3DprintWAVE", TBplotbase::kind::auxiliary);
+
   std::chrono::time_point time_begin = std::chrono::system_clock::now(); //delete
   printf("\n");
 
@@ -153,11 +157,12 @@ void TBmonit::MonitPlots(int max_evt) {
         disMapAccuWave->fillADC(tmpId, peak);
         HitMapSingWave->fillADC(tmpId, peak);
 
+        if ( tmpId.det() == TBdetector::detid::Module3D_C || tmpId.det() == TBdetector::detid::Module3D_S )
+          M3DprintWAVE->fillADC(tmpId, peak);
+
         if (tmpId.det() == TBdetector::detid::preshower || tmpId.det() == TBdetector::detid::tail || tmpId.det() == TBdetector::detid::muon)
           AuxWave->fillAux(tmpId, peak);
 
-        // if (tmpId.det() == TBdetector::detid::preshower || tmpId.det() == TBdetector::detid::tail || tmpId.det() == TBdetector::detid::muon)
-        //   AuxWave->fillAux(tmpId, adc);
 
         if (tmpId.module() == 2 && tmpId.tower() == 5) {
           if (tmpId.isCeren())
@@ -216,6 +221,9 @@ void TBmonit::MonitPlots(int max_evt) {
         float adc = achannel.adc();
         HitMapAccuFast->fillADC(utility.find(cid), adc/(float)nevt_fast);
         disMapAccuFast->fillADC(utility.find(cid), adc);
+
+        if ( tmpId.det() == TBdetector::detid::Module3D_C || tmpId.det() == TBdetector::detid::Module3D_S )
+          M3DprintFAST->fillADC(tmpId, adc);
 
         if (tmpId.det() == TBdetector::detid::preshower || tmpId.det() == TBdetector::detid::tail || tmpId.det() == TBdetector::detid::muon)
           AuxFast->fillAux(tmpId, adc);

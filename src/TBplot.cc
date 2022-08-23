@@ -31,6 +31,8 @@ TBplotbase::TBplotbase(int ww, int wh, const std::string& canvasname, const std:
     plotkind_ = kind::dwc;
   else if (plotkind=="auxiliary")
     plotkind_ = kind::auxiliary;
+  else if (plotkind=="M3Dprint")
+    plotkind_ = kind::M3Dprint;
   else
     throw std::runtime_error("TBplotbase - please check TBplotbase::kind!");
 
@@ -52,7 +54,7 @@ void TBplotbase::init() {
     pads_.push_back(tmpPad);
     if (plotkind_ == TBplotbase::kind::distribution) {
       padSet(pads_.at(i), 0.05);
-    } else if(plotkind_ == kind::dwc || plotkind_ == kind::auxiliary){
+    } else if(plotkind_ == kind::dwc || plotkind_ == kind::auxiliary || plotkind_ == kind::auxiliary){
       padSet(pads_.at(i), 0.08);
     } else {
       padSet(pads_.at(i), 0.);
@@ -182,6 +184,21 @@ void TBplot::init_plots() {
     plots1D_.push_back(tmpHist2);
     plots1D_.push_back(tmpHist3);
 
+  } else if ( plotkind_ == TBplotbase::kind::M3Dprint ) {
+    TH1D* tmpHist1 = new TH1D((TString)(plotname_+std::to_string(plotkind_)+""+std::to_string(0)), "3D printing mudule; ", distBin_, 0, distMax_);
+    tmpHist1->SetTitle("");
+    tmpHist1->SetLineWidth(1);
+    tmpHist1->Sumw2();
+    tmpHist1->SetLineColor(kBlue);
+
+    TH1D* tmpHist2 = new TH1D((TString)(plotname_+std::to_string(plotkind_)+""+std::to_string(1)), (TString)(plotname_+std::to_string(plotkind_)+""+std::to_string(1)), distBin_, 0, distMax_);
+    tmpHist2->SetTitle("");
+    tmpHist2->SetLineWidth(1);
+    tmpHist2->Sumw2();
+    tmpHist2->SetLineColor(kRed);
+
+    plots1D_.push_back(tmpHist1);
+    plots1D_.push_back(tmpHist2);
   } else {
     throw std::runtime_error("Available plot : Hitmap, ADC distribution, Waveform");
   }
@@ -356,6 +373,12 @@ void TBplot::fillADC( TBdetector detid, float adc ) {
         if ( Ntower == 9 ) plots1D_.at(25)->Fill(adc);
       }
     }
+  } else if ( plotkind_ == TBplotbase::kind::M3Dprint ) {
+    if ( isCeren )
+      plots1D_.at(0)->Fill(adc);
+    else
+      plots1D_.at(1)->Fill(adc);
+
   }
 }
 
@@ -474,10 +497,6 @@ void TBplot::Draw() {
       pads_.at(i)->Modified();
       pads_.at(i)->Update();
 
-      c_->cd();
-      pads_.at(i)->cd();
-      pads_.at(i)->Modified();
-      pads_.at(i)->Update();
     }
   } else if ( plotkind_ == TBplotbase::kind::auxiliary ) {
     for (int i = 0; i < xlow.at(plotkind_).size(); i++) {
@@ -486,5 +505,39 @@ void TBplot::Draw() {
       plots1D_.at(i)->Draw("Hist");
   	  c_->Update();
     }
+  } else if ( plotkind_ == TBplotbase::kind::M3Dprint ) {
+    c_->cd();
+    pads_.at(0)->cd();
+
+    plots1D_.at(1)->Draw("Hist");
+    c_->Modified();
+    c_->Update();
+
+    TPaveStats* S_stat = (TPaveStats*)plots1D_.at(1)->FindObject("stats");
+    S_stat->SetName("Scintillation");
+    S_stat->SetTextColor(kRed);
+    S_stat->SetX1NDC(0.65);
+    S_stat->SetX2NDC(0.95);
+    S_stat->SetY1NDC(0.8);
+    S_stat->SetY2NDC(1.0);
+    S_stat->SaveStyle();
+
+    plots1D_.at(0)->Draw("Hist&sames");
+    c_->Modified();
+    c_->Update();
+
+    TPaveStats* C_stat = (TPaveStats*)plots1D_.at(0)->FindObject("stats");
+    C_stat->SetName("Cerenkov");
+    C_stat->SetTextColor(kBlue);
+    C_stat->SetX1NDC(0.65);
+    C_stat->SetX2NDC(0.95);
+    C_stat->SetY1NDC(0.6);
+    C_stat->SetY2NDC(0.8);
+    C_stat->SaveStyle();
+
+    c_->cd();
+    pads_.at(0)->cd();
+    pads_.at(0)->Modified();
+    pads_.at(0)->Update();
   }
 }

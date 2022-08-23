@@ -29,8 +29,8 @@ WaveFiles=[]
 FastFiles=[]
 
 for mid in range(1,16):
-	WaveDat=f"/Users/drc_daq/scratch/Aug2022TB/SSD/SSD_Run_{rn}/Run_{rn}_Wave/Run_{rn}_Wave_MID_{mid}/Run_{rn}_Wave_MID_{mid}_FILE_{fn}.dat"
-	FastDat=f"/Users/drc_daq/scratch/Aug2022TB/SSD/SSD_Run_{rn}/Run_{rn}_Fast/Run_{rn}_Fast_MID_{mid}/Run_{rn}_Fast_MID_{mid}_FILE_{fn}.dat"
+	WaveDat=f"/eos/user/k/khwang/RawData/Run_{rn}/Run_{rn}_Wave/Run_{rn}_Wave_MID_{mid}/Run_{rn}_Wave_MID_{mid}_FILE_{fn}.dat"
+	FastDat=f"/eos/user/k/khwang/RawData/Run_{rn}/Run_{rn}_Fast/Run_{rn}_Fast_MID_{mid}/Run_{rn}_Fast_MID_{mid}_FILE_{fn}.dat"
 	if(os.path.isfile):WaveFiles.append(WaveDat)
 	else:print(WaveDat,"not found")
 	if(os.path.isfile):FastFiles.append(FastDat)
