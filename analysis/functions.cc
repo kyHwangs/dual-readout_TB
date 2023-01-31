@@ -93,10 +93,16 @@ static float dwc2VerticalOffset = -0.278179655;
 // static float dwc2Xoffset = 4.144;
 // static float dwc2Yoffset = -10.54;
 
-static float dwc1Xoffset = 0.;
-static float dwc1Yoffset = 0.;
-static float dwc2Xoffset = 0.;
-static float dwc2Yoffset = 0.;
+// Run624
+static float dwc1Xoffset = 2.954;
+static float dwc1Yoffset = -3.088;
+static float dwc2Xoffset = 4.554;
+static float dwc2Yoffset = -10.30;
+
+// static float dwc1Xoffset = 0.;
+// static float dwc1Yoffset = 0.;
+// static float dwc2Xoffset = 0.;
+// static float dwc2Yoffset = 0.;
 
 std::vector<float> getDWCposition(std::vector<int> dwcTime) {
 
@@ -166,10 +172,11 @@ bool muCut(double MU) {
   return false;
 }
 
-std::vector<short> getPeakRegion(std::vector<short> wave) {
-  int peakIdx = std::min_element(wave.begin()+10, wave.end()-50) - wave.begin();
+std::vector<float> getPeakRegion(std::vector<float> wave, int begin, int end) {
+  int peakIdx = std::max_element(wave.begin() + begin, wave.end() - end) - wave.begin();
+  // std::cout << peakIdx << std::endl;
   
-  std::vector<short> wave_refine;
+  std::vector<float> wave_refine;
   for ( int i = peakIdx - 60; i < peakIdx - 60 + 150; i++ )
     wave_refine.push_back(wave.at(i));
 
