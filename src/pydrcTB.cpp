@@ -17,7 +17,7 @@ BOOST_PYTHON_MODULE(pydrcTB) {
     .def("readWaveform", &TBread::readWaveform)
     .def("readFastmode", &TBread::readFastmode)
     .def("setMappingPath", &TBread::setMappingPath)
-    .def("setPedestalPath", &TBread::setPedestalPath)
+    .def("setPedestalPath", &TBread::setPedestalPath);
 
   boost::python::class_<TH1F>("TH1F"); // For returning TH1F
   boost::python::class_<TH1D>("TH1D"); // For returning TH1D
