@@ -67,10 +67,15 @@ void DWCset<T>::print() {
 template<typename T>
 void DWCset<T>::CalcPosition() {
 
-  fDWCposition.push_back( -(fDWCtime.at(0) - fDWCtime.at(1)) * fDWCclaib.at(0) + fDWCclaib.at(1) - fPhysicalOffset.at(0) );
-  fDWCposition.push_back(  (fDWCtime.at(2) - fDWCtime.at(3)) * fDWCclaib.at(2) + fDWCclaib.at(3) - fPhysicalOffset.at(1) );
-  fDWCposition.push_back( -(fDWCtime.at(4) - fDWCtime.at(5)) * fDWCclaib.at(4) + fDWCclaib.at(5) - fPhysicalOffset.at(2) );
-  fDWCposition.push_back(  (fDWCtime.at(6) - fDWCtime.at(7)) * fDWCclaib.at(6) + fDWCclaib.at(7) - fPhysicalOffset.at(3) );
+  // fDWCposition.push_back( -(fDWCtime.at(0) - fDWCtime.at(1)) * fDWCclaib.at(0) + fDWCclaib.at(1) - fPhysicalOffset.at(0) );
+  // fDWCposition.push_back(  (fDWCtime.at(2) - fDWCtime.at(3)) * fDWCclaib.at(2) + fDWCclaib.at(3) - fPhysicalOffset.at(1) );
+  // fDWCposition.push_back( -(fDWCtime.at(4) - fDWCtime.at(5)) * fDWCclaib.at(4) + fDWCclaib.at(5) - fPhysicalOffset.at(2) );
+  // fDWCposition.push_back(  (fDWCtime.at(6) - fDWCtime.at(7)) * fDWCclaib.at(6) + fDWCclaib.at(7) - fPhysicalOffset.at(3) );
+
+  fDWCposition.push_back( -(fDWCtime.at(0) - fDWCtime.at(1)) * fDWCclaib.at(0) + fDWCclaib.at(1) );
+  fDWCposition.push_back(  (fDWCtime.at(2) - fDWCtime.at(3)) * fDWCclaib.at(2) + fDWCclaib.at(3) );
+  fDWCposition.push_back( -(fDWCtime.at(4) - fDWCtime.at(5)) * fDWCclaib.at(4) + fDWCclaib.at(5) );
+  fDWCposition.push_back(  (fDWCtime.at(6) - fDWCtime.at(7)) * fDWCclaib.at(6) + fDWCclaib.at(7) );
 }
 
 template<typename T>
@@ -89,8 +94,8 @@ void DWCset<T>::GetTime(TBfastmode onedwc) {
 template<typename T>
 bool DWCset<T>::inVeto() {
 
-	float center_1 = std::sqrt(fDWCposition.at(0) * fDWCposition.at(0) + fDWCposition.at(1) * fDWCposition.at(1));
-	float center_2 = std::sqrt(fDWCposition.at(2) * fDWCposition.at(2) + fDWCposition.at(3) * fDWCposition.at(3));
+	float center_1 = std::sqrt( (fDWCposition.at(0) - fPhysicalOffset.at(0)) * (fDWCposition.at(0) - fPhysicalOffset.at(0)) + (fDWCposition.at(1) - fPhysicalOffset.at(1)) * (fDWCposition.at(1) - fPhysicalOffset.at(1)) );
+	float center_2 = std::sqrt( (fDWCposition.at(2) - fPhysicalOffset.at(2)) * (fDWCposition.at(2) - fPhysicalOffset.at(2)) + (fDWCposition.at(3) - fPhysicalOffset.at(3)) * (fDWCposition.at(3) - fPhysicalOffset.at(3)) );
 
 	if ( center_1 < 20 && center_2 < 20 )
 		return true;
@@ -100,7 +105,7 @@ bool DWCset<T>::inVeto() {
 
 template<typename T>
 bool DWCset<T>::inAlign(float thres) {
-	if ( std::abs(fDWCposition.at(0) - fDWCposition.at(2)) < thres && std::abs(fDWCposition.at(1) - fDWCposition.at(3)) < thres )
+	if ( std::abs(fDWCposition.at(0) - fPhysicalOffset.at(0) - fDWCposition.at(2) + fPhysicalOffset.at(2)) < thres && std::abs(fDWCposition.at(1) - fPhysicalOffset.at(1) - fDWCposition.at(3) + fPhysicalOffset.at(3)) < thres )
 		return true;
 
 	return false;

@@ -78,6 +78,18 @@ float getDWCtimeWave(TBwaveform wave, float ped) {
   return getLeadingEdge(wave.pedcorrectedWaveform(ped));
 }
 
+std::vector<float> dwc_calib = {
+                                  -0.1740806676,
+                                  -0.1680572999,
+                                  -0.17424779576,
+                                  -0.053701300,
+                                  -0.17257273,
+                                  -0.579927452,
+                                  -0.1741203164,
+                                  -0.278179655
+                                };
+
+
 static float dwc1horizontalSlope = -0.1740806676;
 static float dwc1horizontalOffset = -0.1680572999;
 static float dwc1VerticalSlope = -0.17424779576;
@@ -174,10 +186,43 @@ bool muCut(double MU) {
 
 std::vector<float> getPeakRegion(std::vector<float> wave, int begin, int end) {
   int peakIdx = std::max_element(wave.begin() + begin, wave.end() - end) - wave.begin();
-  // std::cout << peakIdx << std::endl;
   
+  // std::cout << peakIdx - 30 << " " << peakIdx << " " << peakIdx + 120 << std::endl;
+  
+  if ( peakIdx < begin + 30 )
+  peakIdx = begin + 30;
+
+  if ( peakIdx > 880 )
+    peakIdx =  880;
+
   std::vector<float> wave_refine;
   for ( int i = peakIdx - 60; i < peakIdx - 60 + 150; i++ )
+    wave_refine.push_back(wave.at(i));
+
+  return wave_refine;
+}
+
+std::vector<float> getLeadEdgeRegion(std::vector<float> wave, int begin, int end) {
+  int peakIdx = std::max_element(wave.begin() + begin, wave.end() - end) - wave.begin();
+  float thres = *std::max_element(wave.begin() + begin, wave.end() - end) * 0.1;
+
+  int leIdx = peakIdx;
+  for ( int i = peakIdx; i >= begin + 1; i-- ) {
+    if ( thres > wave.at(i) ) {
+      leIdx = i;
+      break;
+    }
+  }
+
+  if ( leIdx < 31 )
+    leIdx = 31;
+
+  if ( leIdx > 850 )
+    leIdx = 850;
+
+  // std::cout << leIdx - 30 << " " << leIdx << " " << leIdx + 120 << std::endl;
+  std::vector<float> wave_refine;
+  for ( int i = leIdx - 30; i < leIdx - 30 + 150; i++ )
     wave_refine.push_back(wave.at(i));
 
   return wave_refine;
