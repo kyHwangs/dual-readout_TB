@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
 	ROOT::EnableImplicitMT();
 
 	std::string runNum = argv[1];
-	std::string filePath = "./rootCol/TreeRun" + runNum + "_RunInfo.root";
+	std::string filePath = "./TreeRun" + runNum + "_RunInfo.root";
 	std::string outoutPath = "./RDF_Run" + runNum + ".root";
 
 	std::map<int, std::vector<float>> dwcOffset = {

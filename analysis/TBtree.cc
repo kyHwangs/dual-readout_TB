@@ -132,7 +132,7 @@ int main(int argc, char** argv) {
   moduleM1TSavgTimeStructure.emplace_back(new TH1D("m1t3SAvgTime", "M1T3 S avg. Time Structure;bin [0.4ns/bin];ADC", 1024, 0., 1024.)); moduleM1TSavgTimeStructure.at(2)->Sumw2();
   moduleM1TSavgTimeStructure.emplace_back(new TH1D("m1t4SAvgTime", "M1T4 S avg. Time Structure;bin [0.4ns/bin];ADC", 1024, 0., 1024.)); moduleM1TSavgTimeStructure.at(3)->Sumw2();
 
-  TFile* treeFile = new TFile((TString)("/d0/scratch/kyhwang/WorkSpace/DRC/Aug2022TB/dev_230201/dual-readout_TB/analysis/TreeRun" + std::to_string(runNum) + "_RunInfo.root"), "RECREATE");
+  TFile* treeFile = new TFile((TString)("./TreeRun" + std::to_string(runNum) + "_RunInfo.root"), "RECREATE");
 
   TTree* aTree = new TTree("data", "data");
 
@@ -286,56 +286,56 @@ int main(int argc, char** argv) {
 
     aTree->Fill();
 
-    // if ( !dwcSet->inAlign(1.5) ) continue;
-    // if ( !( psADC > 36000. ) ) continue;
-    // if ( !( muADC < 2400. ) ) continue;
+    if ( !dwcSet->inAlign(1.5) ) continue;
+    if ( !( psADC > 36000. ) ) continue;
+    if ( !( muADC < 2400. ) ) continue;
 
-    // selEvent++;
+    selEvent++;
 
-    // for ( int i = 0; i < 1024; i++ ) {
-    //   preShower_Full->Fill(i, psWave_origin.at(i));
-    //   muonCounter_Full->Fill(i, muWave_origin.at(i));
-    //   tailCatcher_Full->Fill(i, tcWave_origin.at(i));
+    for ( int i = 0; i < 1024; i++ ) {
+      preShower_Full->Fill(i, psWave_origin.at(i));
+      muonCounter_Full->Fill(i, muWave_origin.at(i));
+      tailCatcher_Full->Fill(i, tcWave_origin.at(i));
 
-    //   psAvgTime->Fill(i, psWave_origin.at(i));
-    //   muAvgTime->Fill(i, muWave_origin.at(i));
-    //   tcAvgTime->Fill(i, tcWave_origin.at(i));
+      psAvgTime->Fill(i, psWave_origin.at(i));
+      muAvgTime->Fill(i, muWave_origin.at(i));
+      tcAvgTime->Fill(i, tcWave_origin.at(i));
 
-    //   moduleM1TCavgTimeStructure.at(0)->Fill(i, moduleM1T1Cwave_origin.at(i));
-    //   moduleM1TSavgTimeStructure.at(0)->Fill(i, moduleM1T1Swave_origin.at(i));
-    //   moduleM1TCavgTimeStructure.at(1)->Fill(i, moduleM1T2Cwave_origin.at(i));
-    //   moduleM1TSavgTimeStructure.at(1)->Fill(i, moduleM1T2Swave_origin.at(i));
-    //   moduleM1TCavgTimeStructure.at(2)->Fill(i, moduleM1T3Cwave_origin.at(i));
-    //   moduleM1TSavgTimeStructure.at(2)->Fill(i, moduleM1T3Swave_origin.at(i));
-    //   moduleM1TCavgTimeStructure.at(3)->Fill(i, moduleM1T4Cwave_origin.at(i));
-    //   moduleM1TSavgTimeStructure.at(3)->Fill(i, moduleM1T4Swave_origin.at(i));
-    // }
+      moduleM1TCavgTimeStructure.at(0)->Fill(i, moduleM1T1Cwave_origin.at(i));
+      moduleM1TSavgTimeStructure.at(0)->Fill(i, moduleM1T1Swave_origin.at(i));
+      moduleM1TCavgTimeStructure.at(1)->Fill(i, moduleM1T2Cwave_origin.at(i));
+      moduleM1TSavgTimeStructure.at(1)->Fill(i, moduleM1T2Swave_origin.at(i));
+      moduleM1TCavgTimeStructure.at(2)->Fill(i, moduleM1T3Cwave_origin.at(i));
+      moduleM1TSavgTimeStructure.at(2)->Fill(i, moduleM1T3Swave_origin.at(i));
+      moduleM1TCavgTimeStructure.at(3)->Fill(i, moduleM1T4Cwave_origin.at(i));
+      moduleM1TSavgTimeStructure.at(3)->Fill(i, moduleM1T4Swave_origin.at(i));
+    }
 
-    // preShower->Fill(psADC);
-    // muonCounter->Fill(muADC);
-    // tailCatcher->Fill(tcADC);
+    preShower->Fill(psADC);
+    muonCounter->Fill(muADC);
+    tailCatcher->Fill(tcADC);
 
-    // moduleM1TC.at(0)->Fill(moduleM1T1Cadc);
-    // moduleM1TS.at(0)->Fill(moduleM1T1Sadc);
-    // moduleM1TC.at(1)->Fill(moduleM1T2Cadc);
-    // moduleM1TS.at(1)->Fill(moduleM1T2Sadc);
-    // moduleM1TC.at(2)->Fill(moduleM1T3Cadc);
-    // moduleM1TS.at(2)->Fill(moduleM1T3Sadc);
-    // moduleM1TC.at(3)->Fill(moduleM1T4Cadc);
-    // moduleM1TS.at(3)->Fill(moduleM1T4Sadc);
+    moduleM1TC.at(0)->Fill(moduleM1T1Cadc);
+    moduleM1TS.at(0)->Fill(moduleM1T1Sadc);
+    moduleM1TC.at(1)->Fill(moduleM1T2Cadc);
+    moduleM1TS.at(1)->Fill(moduleM1T2Sadc);
+    moduleM1TC.at(2)->Fill(moduleM1T3Cadc);
+    moduleM1TS.at(2)->Fill(moduleM1T3Sadc);
+    moduleM1TC.at(3)->Fill(moduleM1T4Cadc);
+    moduleM1TS.at(3)->Fill(moduleM1T4Sadc);
 
-    // dwc1pos->Fill(dwc_pos.at(0), dwc_pos.at(1));
-    // dwc2pos->Fill(dwc_pos.at(2), dwc_pos.at(3));
-    // dwc1vs2x->Fill(dwc_pos.at(0), dwc_pos.at(2));
-    // dwc1vx2y->Fill(dwc_pos.at(1), dwc_pos.at(3));
+    dwc1pos->Fill(dwc_pos.at(0), dwc_pos.at(1));
+    dwc2pos->Fill(dwc_pos.at(2), dwc_pos.at(3));
+    dwc1vs2x->Fill(dwc_pos.at(0), dwc_pos.at(2));
+    dwc1vx2y->Fill(dwc_pos.at(1), dwc_pos.at(3));
 
-    // dwc1_X->Fill(dwc_pos.at(0));
-    // dwc1_Y->Fill(dwc_pos.at(1));
-    // dwc2_X->Fill(dwc_pos.at(2));
-    // dwc2_Y->Fill(dwc_pos.at(3));
+    dwc1_X->Fill(dwc_pos.at(0));
+    dwc1_Y->Fill(dwc_pos.at(1));
+    dwc2_X->Fill(dwc_pos.at(2));
+    dwc2_Y->Fill(dwc_pos.at(3));
 
-    // dwc_X_diff->Fill(dwc_pos.at(0) - dwc_pos.at(2));
-    // dwc_Y_diff->Fill(dwc_pos.at(1) - dwc_pos.at(3));
+    dwc_X_diff->Fill(dwc_pos.at(0) - dwc_pos.at(2));
+    dwc_Y_diff->Fill(dwc_pos.at(1) - dwc_pos.at(3));
   }
   loader->close();
 
@@ -343,76 +343,74 @@ int main(int argc, char** argv) {
   aTree->Write();
   treeFile->Close();
 
-  // psAvgTime->Scale(1./selEvent);
-  // muAvgTime->Scale(1./selEvent);
-  // tcAvgTime->Scale(1./selEvent);
+  psAvgTime->Scale(1./selEvent);
+  muAvgTime->Scale(1./selEvent);
+  tcAvgTime->Scale(1./selEvent);
 
-  // for ( int i = 0; i < 4; i++ ) {
-  //   moduleM1TCavgTimeStructure.at(i)->Scale(1./selEvent);
-  //   moduleM1TSavgTimeStructure.at(i)->Scale(1./selEvent);
-  // }
+  for ( int i = 0; i < 4; i++ ) {
+    moduleM1TCavgTimeStructure.at(i)->Scale(1./selEvent);
+    moduleM1TSavgTimeStructure.at(i)->Scale(1./selEvent);
+  }
 
-  // for ( int i = 0; i < 1024; i++ ) {
-  //   psAvgTime->SetBinError(i+1, 1e-10);
-  //   muAvgTime->SetBinError(i+1, 1e-10);
-  //   tcAvgTime->SetBinError(i+1, 1e-10);
+  for ( int i = 0; i < 1024; i++ ) {
+    psAvgTime->SetBinError(i+1, 1e-10);
+    muAvgTime->SetBinError(i+1, 1e-10);
+    tcAvgTime->SetBinError(i+1, 1e-10);
     
-  //   for ( int j = 0; j < 4; j++ ) {
-  //     moduleM1TCavgTimeStructure.at(j)->SetBinError(i+1, 1e-10);
-  //     moduleM1TSavgTimeStructure.at(j)->SetBinError(i+1, 1e-10);
-  //   }
-  // }
+    for ( int j = 0; j < 4; j++ ) {
+      moduleM1TCavgTimeStructure.at(j)->SetBinError(i+1, 1e-10);
+      moduleM1TSavgTimeStructure.at(j)->SetBinError(i+1, 1e-10);
+    }
+  }
 
-  std::cout << selEvent << std::endl;
-
-  // TFile* rootOutput = new TFile((TString)("/d0/scratch/kyhwang/WorkSpace/DRC/Aug2022TB/dev_230201/dual-readout_TB/analysis/230213_TreeTest/IntRun" + std::to_string(runNum) + "_RunInfo.root"), "RECREATE");
-  // rootOutput->cd();
+  TFile* rootOutput = new TFile((TString)("./IntRun" + std::to_string(runNum) + "_RunInfo.root"), "RECREATE");
+  rootOutput->cd();
   
-  // preShower->getHist()->Write();
-  // muonCounter->getHist()->Write();
-  // tailCatcher->getHist()->Write();
+  preShower->getHist()->Write();
+  muonCounter->getHist()->Write();
+  tailCatcher->getHist()->Write();
 
-  // moduleM1TC.at(0)->getHist()->Write();
-  // moduleM1TC.at(1)->getHist()->Write();
-  // moduleM1TC.at(2)->getHist()->Write();
-  // moduleM1TC.at(3)->getHist()->Write();
+  moduleM1TC.at(0)->getHist()->Write();
+  moduleM1TC.at(1)->getHist()->Write();
+  moduleM1TC.at(2)->getHist()->Write();
+  moduleM1TC.at(3)->getHist()->Write();
 
-  // moduleM1TS.at(0)->getHist()->Write();
-  // moduleM1TS.at(1)->getHist()->Write();
-  // moduleM1TS.at(2)->getHist()->Write();
-  // moduleM1TS.at(3)->getHist()->Write();
+  moduleM1TS.at(0)->getHist()->Write();
+  moduleM1TS.at(1)->getHist()->Write();
+  moduleM1TS.at(2)->getHist()->Write();
+  moduleM1TS.at(3)->getHist()->Write();
   
-  // preShower_Full->Write();
-  // muonCounter_Full->Write();
-  // tailCatcher_Full->Write();
+  preShower_Full->Write();
+  muonCounter_Full->Write();
+  tailCatcher_Full->Write();
 
-  // dwc1pos->Write();
-  // dwc2pos->Write();
-  // dwc1vs2x->Write();
-  // dwc1vx2y->Write();
-  // dwc1_X->getHist()->Write();
-  // dwc1_Y->getHist()->Write();
-  // dwc2_X->getHist()->Write();
-  // dwc2_Y->getHist()->Write();  
-  // dwc_X_diff->getHist()->Write();
-  // dwc_Y_diff->getHist()->Write();
+  dwc1pos->Write();
+  dwc2pos->Write();
+  dwc1vs2x->Write();
+  dwc1vx2y->Write();
+  dwc1_X->getHist()->Write();
+  dwc1_Y->getHist()->Write();
+  dwc2_X->getHist()->Write();
+  dwc2_Y->getHist()->Write();  
+  dwc_X_diff->getHist()->Write();
+  dwc_Y_diff->getHist()->Write();
 
-  // psAvgTime->Write();
-  // muAvgTime->Write();
-  // tcAvgTime->Write();
+  psAvgTime->Write();
+  muAvgTime->Write();
+  tcAvgTime->Write();
 
-  // moduleM1TCavgTimeStructure.at(0)->Write();
-  // moduleM1TCavgTimeStructure.at(1)->Write();
-  // moduleM1TCavgTimeStructure.at(2)->Write();
-  // moduleM1TCavgTimeStructure.at(3)->Write();
+  moduleM1TCavgTimeStructure.at(0)->Write();
+  moduleM1TCavgTimeStructure.at(1)->Write();
+  moduleM1TCavgTimeStructure.at(2)->Write();
+  moduleM1TCavgTimeStructure.at(3)->Write();
 
-  // moduleM1TSavgTimeStructure.at(0)->Write();
-  // moduleM1TSavgTimeStructure.at(1)->Write();
-  // moduleM1TSavgTimeStructure.at(2)->Write();
-  // moduleM1TSavgTimeStructure.at(3)->Write();
+  moduleM1TSavgTimeStructure.at(0)->Write();
+  moduleM1TSavgTimeStructure.at(1)->Write();
+  moduleM1TSavgTimeStructure.at(2)->Write();
+  moduleM1TSavgTimeStructure.at(3)->Write();
 
 
-  // rootOutput->Close();
+  rootOutput->Close();
 
   return 0;
 }
