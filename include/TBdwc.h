@@ -16,9 +16,10 @@ template <class T>
 class DWCset
 {
 public:
-	DWCset(int runNum_, std::vector<float> calib_);
+	DWCset(int runNum_, std::vector<float> calib_, float thres_);
 	~DWCset();
 
+	void SetDWC(std::vector<T> dwc1_, std::vector<T> dwc2_, std::vector<float> ped_);
 	void SetDWC(std::vector<T> dwc1_, std::vector<T> dwc2_);
 	void SetOffset(std::vector<float> offset) { fPhysicalOffset = offset; }
 	void print();
@@ -27,6 +28,9 @@ public:
 	bool inAlign(float thres);
 
 	std::vector<float> GetPosition() { return fDWCposition; }
+	std::vector<float> GetAlignedPosition() { return fDWCpositionAligned; }
+
+	std::vector<float> GetTimeVec() { return fDWCtime; }
 
 private:
 
@@ -35,8 +39,10 @@ private:
 	void CalcPosition();
 		
 	void GetTime(TBwaveform onedwc);
+	void GetTime(TBwaveform onedwc, float ped_);
 	void GetTime(TBfastmode onedwc);
-
+	void GetTime(TBfastmode onedwc, float ped_);
+	
 	std::string getName(TBwaveform set) { return "TBwaveform"; }
 	std::string getName(TBfastmode set) { return "TBfastmode"; }
 
@@ -54,9 +60,11 @@ private:
 	// 6 : float dwc2VerticalSlope;  //   = -0.1741203164;
 	// 7 : float dwc2VerticalOffset;  //  = -0.278179655;
 
+	float fThres;
 	std::vector<float> fPhysicalOffset;
 	std::vector<float> fDWCtime;
 	std::vector<float> fDWCposition;
+	std::vector<float> fDWCpositionAligned;
 };
 
 

@@ -1,8 +1,8 @@
 #include "TBdwc.h"
 
 template<typename T>
-DWCset<T>::DWCset(int runNum_, std::vector<float> calib_) 
-: fRunNum(runNum_), fMode(), fDWCclaib(calib_), fPhysicalOffset(0), fDWCtime(0), fDWCposition(0) {
+DWCset<T>::DWCset(int runNum_, std::vector<float> calib_, float thres_) 
+: fRunNum(runNum_), fMode(), fDWCclaib(calib_), fThres(thres_), fPhysicalOffset(0), fDWCtime(0), fDWCposition(0) {
 	init();
 }
 
@@ -39,6 +39,21 @@ void DWCset<T>::SetDWC(std::vector<T> dwc1_, std::vector<T> dwc2_) {
 }
 
 template<typename T>
+void DWCset<T>::SetDWC(std::vector<T> dwc1_, std::vector<T> dwc2_, std::vector<float> ped_) {
+
+	fDWCtime.clear();
+	fDWCposition.clear();
+
+	for ( int i = 0; i < 4; i++ )
+		GetTime(dwc1_.at(i), ped_.at(i));
+
+	for ( int i = 0; i < 4; i++ )
+		GetTime(dwc2_.at(i), ped_.at(i+4));
+
+	CalcPosition();
+}
+
+template<typename T>
 void DWCset<T>::print() {
 	printf("  \n");
 	printf("  ---------- DWC offset setting ----------\n");
@@ -67,10 +82,10 @@ void DWCset<T>::print() {
 template<typename T>
 void DWCset<T>::CalcPosition() {
 
-  // fDWCposition.push_back( -(fDWCtime.at(0) - fDWCtime.at(1)) * fDWCclaib.at(0) + fDWCclaib.at(1) - fPhysicalOffset.at(0) );
-  // fDWCposition.push_back(  (fDWCtime.at(2) - fDWCtime.at(3)) * fDWCclaib.at(2) + fDWCclaib.at(3) - fPhysicalOffset.at(1) );
-  // fDWCposition.push_back( -(fDWCtime.at(4) - fDWCtime.at(5)) * fDWCclaib.at(4) + fDWCclaib.at(5) - fPhysicalOffset.at(2) );
-  // fDWCposition.push_back(  (fDWCtime.at(6) - fDWCtime.at(7)) * fDWCclaib.at(6) + fDWCclaib.at(7) - fPhysicalOffset.at(3) );
+  fDWCpositionAligned.push_back( -(fDWCtime.at(0) - fDWCtime.at(1)) * fDWCclaib.at(0) + fDWCclaib.at(1) - fPhysicalOffset.at(0) );
+  fDWCpositionAligned.push_back(  (fDWCtime.at(2) - fDWCtime.at(3)) * fDWCclaib.at(2) + fDWCclaib.at(3) - fPhysicalOffset.at(1) );
+  fDWCpositionAligned.push_back( -(fDWCtime.at(4) - fDWCtime.at(5)) * fDWCclaib.at(4) + fDWCclaib.at(5) - fPhysicalOffset.at(2) );
+  fDWCpositionAligned.push_back(  (fDWCtime.at(6) - fDWCtime.at(7)) * fDWCclaib.at(6) + fDWCclaib.at(7) - fPhysicalOffset.at(3) );
 
   fDWCposition.push_back( -(fDWCtime.at(0) - fDWCtime.at(1)) * fDWCclaib.at(0) + fDWCclaib.at(1) );
   fDWCposition.push_back(  (fDWCtime.at(2) - fDWCtime.at(3)) * fDWCclaib.at(2) + fDWCclaib.at(3) );
@@ -86,10 +101,46 @@ void DWCset<T>::GetTime(TBwaveform onedwc) {
 }
 
 template<typename T>
+void DWCset<T>::GetTime(TBwaveform onedwc, float ped_) {
+
+	if( fThres == 1. ) {
+		GetTime(onedwc);
+		return;
+	}
+
+	auto wave = onedwc.pedcorrectedWaveform(ped_);
+
+	float maxValue = *std::max_element(wave.begin() + 1, wave.end() - 23);
+	float thres = maxValue * fThres;
+	int maxIndex = std::max_element(wave.begin() + 1, wave.end() - 23) - wave.begin();
+
+  for (int i = maxIndex; i > 0; i--) {
+    if (wave.at(i - 1) <= thres && wave.at(i) > thres) {
+
+        float amplitudeDiff = wave.at(i) - wave.at(i-1);
+        float leadingEdge = ((float)i - 1.) + (thres - wave.at(i - 1)) / amplitudeDiff;
+
+        fDWCtime.push_back( 0.4 * leadingEdge );
+        return;
+    }
+	}
+	
+	fDWCtime.push_back( 0. );
+	return;
+}
+
+template<typename T>
 void DWCset<T>::GetTime(TBfastmode onedwc) {
 	
 	fDWCtime.push_back( onedwc.timing()  * 25./1000. );
 }
+
+template<typename T>
+void DWCset<T>::GetTime(TBfastmode onedwc, float ped_) {
+	
+	GetTime(onedwc);
+}
+
 
 template<typename T>
 bool DWCset<T>::inVeto() {

@@ -1,0 +1,19 @@
+universe    = vanilla
+executable  = v2sh.sh
+arguments   = ./TBinfo $(runNum) $(maxEvents)
+
+output      = log_v2/$(runNum).out
+error       = log_v2/$(runNum).err
+log         = log_v2/$(runNum).log
+
+request_memory          = 5 GB
+
+should_transfer_files   = YES
+when_to_transfer_output = ON_EXIT
+transfer_input_files    = /u/user/kyhwang/DRC/Aug2022TB/dev_230307/dual-readout_TB/install/lib64, \
+                          /u/user/kyhwang/DRC/Aug2022TB/dev_230307/dual-readout_TB/install/include, \
+                          /u/user/kyhwang/DRC/Aug2022TB/dev_230307/dual-readout_TB/analysis/TBinfo, \
+                          /u/user/kyhwang/DRC/Aug2022TB/dev_230307/dual-readout_TB/analysis/functions.cc
+
+
+queue runNum,maxEvents from job_20GeV.txt

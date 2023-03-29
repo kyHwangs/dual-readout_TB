@@ -1,0 +1,19 @@
+universe    = vanilla
+executable  = condor.sh
+arguments   = ./TBdwc_vs $(runNum) $(maxEvents)
+
+output      = log/$(runNum).out
+error       = log/$(runNum).err
+log         = log/$(runNum).log
+
+request_memory          = 5 GB
+
+should_transfer_files   = YES
+when_to_transfer_output = ON_EXIT
+transfer_input_files    = /u/user/kyhwang/scratch/WorkSpace/DRC/Aug2022TB/dev_230307/dual-readout_TB/install/lib64, \
+                          /u/user/kyhwang/scratch/WorkSpace/DRC/Aug2022TB/dev_230307/dual-readout_TB/install/include, \
+                          /u/user/kyhwang/scratch/WorkSpace/DRC/Aug2022TB/dev_230307/dual-readout_TB/analysis/TBdwc_vs, \
+                          /u/user/kyhwang/scratch/WorkSpace/DRC/Aug2022TB/dev_230307/dual-readout_TB/analysis/functions.cc
+
+
+queue runNum,maxEvents from joblist.txt
