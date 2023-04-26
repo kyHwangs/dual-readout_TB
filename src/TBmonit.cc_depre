@@ -22,15 +22,15 @@
 TBmonit::TBmonit(const std::string& outputName)
 : fastList_(0), waveList_(0), outputName_(outputName) {}
 
-void TBmonit::setFastmodeFiles(const boost::python::list& fastList) {
-  for (unsigned idx = 0; idx < boost::python::len(fastList); idx++)
-    fastList_.push_back(boost::python::extract<std::string>(fastList[idx]));
-}
+// void TBmonit::setFastmodeFiles(const boost::python::list& fastList) {
+//   for (unsigned idx = 0; idx < boost::python::len(fastList); idx++)
+//     fastList_.push_back(boost::python::extract<std::string>(fastList[idx]));
+// }
 
-void TBmonit::setWaveformFiles(const boost::python::list& waveList) {
-  for (unsigned idx = 0; idx < boost::python::len(waveList); idx++)
-    waveList_.push_back(boost::python::extract<std::string>(waveList[idx]));
-}
+// void TBmonit::setWaveformFiles(const boost::python::list& waveList) {
+//   for (unsigned idx = 0; idx < boost::python::len(waveList); idx++)
+//     waveList_.push_back(boost::python::extract<std::string>(waveList[idx]));
+// }
 
 void TBmonit::padSet(TPad* tPad, double margin) {
   tPad->Draw();

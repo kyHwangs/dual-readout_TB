@@ -8,7 +8,7 @@ include(GNUInstallDirs)
 
 find_package(ROOT REQUIRED)
 find_package(PythonLibs REQUIRED)
-find_package(Boost COMPONENTS python REQUIRED)
+find_package(yaml-cpp REQUIRED)
 
 include_directories(
   ${PYTHON_INCLUDE_DIRS}
@@ -30,26 +30,15 @@ include(${ROOT_USE_FILE})
 ROOT_GENERATE_DICTIONARY(G__drcTB ${headers} LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/include/LinkDef.hh MODULE drcTB)
 
 add_library(drcTB SHARED ${sources} G__drcTB.cxx)
-add_library(pydrcTB SHARED ${PROJECT_SOURCE_DIR}/src/pydrcTB.cpp)
 
-target_include_directories(drcTB PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include ${ROOT_INCLUDE_DIRS})
+target_include_directories(drcTB PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include ${ROOT_INCLUDE_DIRS} ${YAML_CPP_INCLUDE_DIR})
 
 target_link_libraries(
   drcTB
   ${ROOT_LIBRARIES}
-  Boost::python
   ${PYTHON_LIBRARIES}
+  ${YAML_CPP_LIBRARIES}
 )
-
-target_link_libraries(
-  pydrcTB
-  drcTB
-  Boost::python
-  ${PYTHON_LIBRARIES}
-)
-
-set_target_properties(pydrcTB PROPERTIES SUFFIX .so)
-set_target_properties(pydrcTB PROPERTIES PREFIX "")
 
 target_include_directories(drcTB PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -61,10 +50,6 @@ set_target_properties(drcTB PROPERTIES PUBLIC_HEADER "${headers}")
 install(TARGETS drcTB EXPORT drcTBTargets
   LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}" COMPONENT shlib
   PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}" COMPONENT dev
-)
-
-install(TARGETS pydrcTB EXPORT drcTBTargets
-  LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}" COMPONENT shlib
 )
 
 install(FILES

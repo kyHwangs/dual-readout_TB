@@ -1,6 +1,10 @@
 #ifndef TBload_h
 #define TBload_h 1
 
+#ifndef _WIN32
+#include <unistd.h>
+#endif
+
 #include <vector>
 #include <string>
 
